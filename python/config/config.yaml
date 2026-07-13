@@ -1,0 +1,333 @@
+# OrderFlow — Live Configuration
+# ================================
+# This file is git-ignored. Do not commit it.
+# See config.yaml.example for documentation on every key.
+#
+# SECURITY: The database password is NOT stored here.
+# Set it via:  export ORDERFLOW_DB_PASSWORD=<your-db-password>
+
+database:
+  host: localhost
+  port: 5432
+  dbname: orderflow
+  user: orderflow
+
+workers:
+
+  history_loader:
+    num_employees: 200
+    num_customers: 100000
+    num_products: 1000
+    num_historical_orders: 500000
+    chunk_size: 5000
+    payment_failure_rate: 0.08
+    max_payment_retries: 3
+    status_distribution:
+      NEW:        0.04
+      PROCESSING: 0.06
+      PACKED:     0.10
+      SHIPPED:    0.20
+      DELIVERED:  0.40
+      RETURNED:   0.12
+      REFUNDED:   0.08
+
+  order_generator:
+    batch_size: 10
+    sleep_seconds: 4.0
+
+  payment_processor:
+    payment_failure_rate: 0.08
+    max_payment_retries: 3
+    batch_size: 50
+    sleep_seconds: 2.0
+
+  order_processor:
+    min_age_processing_to_packed_s: 30
+    min_age_packed_to_shipped_s: 60
+    min_age_shipped_to_delivered_s: 120
+    min_age_delivered_for_return_s: 180
+    return_probability: 0.05
+    batch_size: 100
+    sleep_seconds: 5.0
+
+  employee_updates:
+    sample_size: 20
+    sleep_seconds: 10.0
+    deactivate_prob: 0.02
+    dept_change_prob: 0.10
+    salary_min_delta: "0.05"
+    salary_max_delta: "0.15"
+
+simulation:
+
+  employees:
+    roles:
+      - warehouse_staff
+      - courier
+      - finance
+      - manager
+      - admin
+    role_weights: [0.40, 0.25, 0.15, 0.15, 0.05]
+    role_departments:
+      warehouse_staff: Fulfillment
+      courier: Logistics
+      finance: Finance
+      manager: Operations
+      admin: Administration
+    salary_ranges:
+      warehouse_staff: [35000, 55000]
+      courier:         [38000, 58000]
+      finance:         [60000, 95000]
+      manager:         [75000, 120000]
+      admin:           [70000, 110000]
+    min_tenure_days: 30
+    max_tenure_days: 4380
+
+  customers:
+    loyalty_tiers: [bronze, silver, gold, platinum]
+    loyalty_weights: [0.60, 0.25, 0.12, 0.03]
+    countries: [US, US, US, US, US, CA, CA, GB, AU, DE]
+    us_states:
+      - CA
+      - TX
+      - FL
+      - NY
+      - PA
+      - IL
+      - OH
+      - GA
+      - NC
+      - MI
+      - NJ
+      - VA
+      - WA
+      - AZ
+      - MA
+      - TN
+      - IN
+      - MO
+      - MD
+      - WI
+
+  orders:
+    items_per_order_min: 1
+    items_per_order_max: 6
+    qty_min: 1
+    qty_max: 5
+    discount_prob: 0.20
+    discount_min_pct: "5.00"
+    discount_max_pct: "30.00"
+    notes_prob: 0.10
+    employee_assign_prob: 0.70
+
+  payments:
+    methods:
+      - credit_card
+      - debit_card
+      - paypal
+      - bank_transfer
+      - wallet
+    method_weights: [0.45, 0.25, 0.15, 0.10, 0.05]
+    failure_reasons:
+      - "Insufficient funds"
+      - "Card declined"
+      - "Card expired"
+      - "Fraud suspected — transaction blocked"
+      - "Bank gateway timeout"
+      - "Invalid card number"
+      - "CVV mismatch"
+      - "3DS authentication failed"
+
+  products:
+    Electronics:
+      prefix: ELEC
+      subcategories: [Smartphones, Laptops, Audio, Wearables, Accessories]
+      price_range: ["15.00", "2500.00"]
+      weight_range: [0.05, 3.0]
+      names:
+        - Wireless Earbuds
+        - USB-C Charger
+        - Bluetooth Speaker
+        - Mechanical Keyboard
+        - Webcam HD
+        - Monitor Stand
+        - Smart Watch
+        - Phone Case
+        - Power Bank 20000mAh
+        - HDMI Cable 2m
+        - Laptop Stand
+        - USB Hub 7-Port
+        - Noise-Cancelling Headphones
+      metadata_keys:
+        brand: null
+        color: [Black, White, Silver, Blue]
+        warranty_years: [1, 2, 3]
+
+    Clothing:
+      prefix: CLTH
+      subcategories: ["Men's", "Women's", Unisex, Sportswear, Outerwear]
+      price_range: ["10.00", "250.00"]
+      weight_range: [0.1, 1.5]
+      names:
+        - Cotton T-Shirt
+        - Denim Jeans
+        - Zip Hoodie
+        - Running Shorts
+        - Winter Jacket
+        - Polo Shirt
+        - Yoga Pants
+        - Crew Socks 3-Pack
+        - Baseball Cap
+        - Casual Dress
+        - Quarter-Zip Pullover
+      metadata_keys:
+        size: [XS, S, M, L, XL, XXL]
+        color: [Black, White, Navy, Grey, Red]
+        material: [Cotton, Polyester, Blend, Wool]
+
+    "Home & Kitchen":
+      prefix: HOME
+      subcategories: [Appliances, Cookware, Storage, Bedding, Decor]
+      price_range: ["8.00", "600.00"]
+      weight_range: [0.2, 8.0]
+      names:
+        - French Press 1L
+        - Non-Stick Frying Pan
+        - Bamboo Cutting Board
+        - Dish Drying Rack
+        - Coffee Mug Set 4pc
+        - Bath Towel Set
+        - Collapsible Storage Bin
+        - Soy Wax Candle
+        - Photo Frame 8x10
+        - Throw Pillow Cover
+        - Cast Iron Skillet
+      metadata_keys:
+        color: [Black, White, Beige, Grey]
+        material: [Stainless Steel, Ceramic, Wood, Plastic]
+
+    Books:
+      prefix: BOOK
+      subcategories: [Technology, Fiction, Non-Fiction, Science, Business]
+      price_range: ["8.00", "65.00"]
+      weight_range: [0.15, 1.2]
+      names:
+        - The Art of PostgreSQL
+        - Clean Code
+        - Designing Data-Intensive Applications
+        - Python Crash Course 3rd Ed
+        - Database Internals
+        - The Phoenix Project
+        - Site Reliability Engineering
+        - High Performance PostgreSQL
+        - Systems Performance 2nd Ed
+        - The Pragmatic Programmer
+      metadata_keys:
+        format: [Paperback, Hardcover]
+        language: [English]
+        pages: null
+
+    "Sports & Outdoors":
+      prefix: SPRT
+      subcategories: [Fitness, Running, Cycling, Yoga, Team Sports]
+      price_range: ["5.00", "450.00"]
+      weight_range: [0.1, 5.0]
+      names:
+        - Resistance Band Set
+        - TPE Yoga Mat 6mm
+        - Insulated Water Bottle 1L
+        - Speed Jump Rope
+        - High-Density Foam Roller
+        - Workout Gloves
+        - Adjustable Dumbbell Pair
+        - Running Waist Belt
+        - Compression Sleeve
+        - Drawstring Gym Bag
+      metadata_keys:
+        color: [Black, Blue, Grey, Red]
+        size: [S/M, M/L, One Size]
+
+    "Beauty & Personal Care":
+      prefix: BEAU
+      subcategories: [Skincare, Haircare, Fragrance, "Men's Grooming", "Oral Care"]
+      price_range: ["4.00", "180.00"]
+      weight_range: [0.05, 0.8]
+      names:
+        - Daily Facial Moisturizer SPF30
+        - Volumising Shampoo 400ml
+        - Argan Oil Conditioner
+        - Foaming Body Wash
+        - Mineral Sunscreen SPF50
+        - Tinted Lip Balm
+        - Intensive Hand Cream
+        - Aluminium-Free Deodorant
+        - Sonic Electric Toothbrush
+        - 5-Blade Razor Kit
+      metadata_keys:
+        skin_type: [All, Dry, Oily, Sensitive]
+        size_ml: null
+
+    "Food & Grocery":
+      prefix: FOOD
+      subcategories: [Snacks, Beverages, Pantry, Health Foods, "Coffee & Tea"]
+      price_range: ["3.00", "80.00"]
+      weight_range: [0.1, 2.0]
+      names:
+        - Whey Protein Vanilla 1kg
+        - Single-Origin Coffee Beans 500g
+        - Extra Virgin Olive Oil 750ml
+        - Whole-Wheat Pasta 500g
+        - Granola & Berry Mix 400g
+        - Protein Bar 12-Pack
+        - Organic Green Tea 50 bags
+        - Mixed Almonds 500g
+        - Sriracha Hot Sauce 450ml
+        - 70% Dark Chocolate 100g
+      metadata_keys:
+        diet: [Vegan, Vegetarian, Gluten-Free, "None"]
+        allergens: null
+
+  warehouses:
+    - code: WH-USE-01
+      name: East Coast Fulfillment Center
+      region: us-east
+      address_line1: 100 Commerce Drive
+      city: Newark
+      state: NJ
+      country: US
+      postal_code: "07102"
+      capacity_sqft: 120000
+      is_active: true
+
+    - code: WH-USW-01
+      name: West Coast Distribution Hub
+      region: us-west
+      address_line1: 500 Logistics Parkway
+      city: Reno
+      state: NV
+      country: US
+      postal_code: "89501"
+      capacity_sqft: 95000
+      is_active: true
+
+    - code: WH-USC-01
+      name: Central States Warehouse
+      region: us-central
+      address_line1: 2200 Industrial Blvd
+      city: Kansas City
+      state: MO
+      country: US
+      postal_code: "64108"
+      capacity_sqft: 80000
+      is_active: true
+
+    - code: WH-EUC-01
+      name: EU Central Depot
+      region: eu-central
+      address_line1: Industriestrasse 45
+      city: Frankfurt
+      state: Hesse
+      country: DE
+      postal_code: "60327"
+      capacity_sqft: 70000
+      is_active: true
