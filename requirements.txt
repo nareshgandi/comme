@@ -1,0 +1,10 @@
+# OrderFlow Python dependencies
+# Install: pip install -r requirements.txt
+#
+# Runtime (factories + workers)
+Faker==40.28.1
+psycopg[binary]==3.3.4
+PyYAML==6.0.3
+
+# Testing
+pytest==9.1.1
