@@ -135,3 +135,28 @@ with open(LOCATION_FILE, "w", newline="", encoding="utf-8") as f:
         ])
 
 print("Done.")
+
+COPY location(
+city,
+area,
+created_at
+)
+FROM '/tmp/location.csv'
+CSV;
+
+COPY employees(
+employee_name,
+email,
+department_id,
+salary,
+hire_date,
+skills,
+profile,
+office_location,
+description
+)
+FROM '/tmp/employees.csv'
+CSV;
+
+
+
